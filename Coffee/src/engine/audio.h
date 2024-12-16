@@ -3,28 +3,34 @@
 
 #include <string>
 #include <map>
+#include <vector>
 #include <SDL_mixer.h>
 
 class Audio {
 public:
-    // Initialize and shutdown the audio system
-    static bool init(int frequency = 44100, Uint16 format = MIX_DEFAULT_FORMAT, int channels = 2, int chunksize = 2048);
+    static bool init();
     static void quit();
 
-    // Music methods
-    static bool load_music(const std::string& name, const std::string& path);
-    static void play_music(const std::string& name, int loops = -1); // -1 means loop indefinitely
+    static void load_music(const std::string& name, const std::string& path);
+    static void play_music(const std::string& name, int loops = -1);
     static void pause_music();
     static void resume_music();
     static void stop_music();
 
-    // Sound effects
-    static bool load_sound(const std::string& name, const std::string& path);
-    static void play_sound(const std::string& name, int loops = 0); // 0 means play once
+    static void load_sound(const std::string& name, const std::string& path);
+    static void play_sound(const std::string& name, int loops = 0);
+
+    // New methods for setting and handling a sequence of tracks
+    static void set_music_sequence(const std::vector<std::string>& sequence);
+    static void set_music_sequence(std::initializer_list<std::string> sequence);
+    static void play_next_track();
 
 private:
-    static std::map<std::string, Mix_Music*> music_map;
     static std::map<std::string, Mix_Chunk*> sound_map;
+    static std::map<std::string, Mix_Music*> music_map;
+
+    static std::vector<std::string> music_sequence;
+    static size_t current_track;
 };
 
 #endif

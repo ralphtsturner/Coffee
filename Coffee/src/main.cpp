@@ -21,13 +21,12 @@ int main() {
         return -1;
     }
 
-    // Load background music
-    if (!Audio::load_music("background", "res/music/background.mp3")) {
-        std::cerr << "Failed to load background music.\n";
-    }
+    // Load music tracks
+    Audio::load_music("bg1", "res/music/background.mp3");
+    Audio::load_music("bg2", "res/music/background-2.mp3");
 
-    // Play the background music indefinitely
-    Audio::play_music("background", -1);
+    // Set a sequence of tracks that will play one after another
+    Audio::set_music_sequence({ "bg1", "bg2" });
 
     Input input;
 
