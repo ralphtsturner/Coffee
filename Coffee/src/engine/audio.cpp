@@ -3,7 +3,6 @@
 
 std::map<std::string, Mix_Chunk*> Audio::sound_map;
 std::map<std::string, Mix_Music*> Audio::music_map;
-
 std::vector<std::string> Audio::music_sequence;
 size_t Audio::current_track = 0;
 
@@ -93,7 +92,7 @@ void Audio::play_next_track() {
     if (music_sequence.empty()) return;
 
     const std::string& next_track = music_sequence[current_track];
-    play_music(next_track, 1); // Play current track once
+    play_music(next_track, 1);
 
     Mix_HookMusicFinished([]() {
         current_track = (current_track + 1) % music_sequence.size();

@@ -6,6 +6,7 @@
 #include "engine/collision.h"
 #include "engine/animation.h"
 #include "engine/audio.h"
+#include "engine/camera.h"
 #include <SDL.h>
 #include <iostream>
 #include <vector>
@@ -24,8 +25,6 @@ int main() {
     // Load music tracks
     Audio::load_music("bg1", "res/music/background.mp3");
     Audio::load_music("bg2", "res/music/background-2.mp3");
-
-    // Set a sequence of tracks that will play one after another
     Audio::set_music_sequence({ "bg1", "bg2" });
 
     Input input;
@@ -39,7 +38,7 @@ int main() {
     playerAnim.add_frame(frame1);
     playerAnim.add_frame(frame2);
 
-    // Create player entity with gravity
+    // Create player entity
     Entity player(100.0f, 100.0f, playerAnim);
     player.set_gravity_enabled(true);
     player.set_gravity_value(GRAVITY);
@@ -47,7 +46,7 @@ int main() {
     // Load grass texture
     SDL_Texture* grass_tex = Texture::load_texture(GRASS_TEXTURE, engine.get_renderer());
 
-    // Create platforms (ground + elevated)
+    // Create platforms
     std::vector<SDL_Rect> collidable_objects;
 
     int tile_width = 64;
@@ -77,8 +76,8 @@ int main() {
         collidable_objects.push_back(grass_rect);
     }
 
-    float jump_strength = -500.0f;
-    float horizontal_speed = 250.0f; // Horizontal movement speed
+    // Create camera
+    Camera camera(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     while (engine.is_running()) {
         float dt = engine.get_delta_time();
@@ -95,10 +94,10 @@ int main() {
             engine.quit();
         }
 
-        // First, let entity update velocities (gravity)
+        // Update entity velocities (gravity)
         player.update(dt);
 
-        // Get current position and velocity
+        // Get player position and velocity
         float px, py;
         player.get_position(px, py);
 
@@ -107,10 +106,10 @@ int main() {
 
         // Horizontal input
         vx = 0.0f;
-        if (input.is_key_pressed(SDL_SCANCODE_A)) vx = -horizontal_speed;
-        if (input.is_key_pressed(SDL_SCANCODE_D)) vx = horizontal_speed;
+        if (input.is_key_pressed(SDL_SCANCODE_A)) vx = -SPEED;
+        if (input.is_key_pressed(SDL_SCANCODE_D)) vx = SPEED;
 
-        // Check if on a platform to allow jumping
+        // Check if on platform to allow jumping
         bool on_platform = false;
         {
             SDL_Rect feetRect = player.get_collider();
@@ -125,7 +124,7 @@ int main() {
 
         // Jump if on platform
         if (input.is_key_pressed(SDL_SCANCODE_SPACE) && on_platform) {
-            vy = jump_strength;
+            vy = JUMP_STRENGTH;
         }
 
         player.set_velocity(vx, vy);
@@ -134,17 +133,15 @@ int main() {
         px += vx * dt;
         player.set_position(px, py);
 
-        // Check horizontal collisions
+        // Horizontal collision check
         {
             SDL_Rect playerRect = player.get_collider();
             for (auto& obj : collidable_objects) {
                 if (Collision::AABB(playerRect, obj)) {
                     // Collided horizontally
                     if (vx > 0) {
-                        // Moved right into platform
                         player.set_position(obj.x - playerRect.w, py);
                     } else if (vx < 0) {
-                        // Moved left into platform
                         player.set_position(obj.x + obj.w, py);
                     }
                     // Stop horizontal movement
@@ -154,27 +151,24 @@ int main() {
             }
         }
 
-        // After resolving horizontal collision, move vertically
+        // After horizontal resolved, move vertically
         player.get_position(px, py);
         player.get_velocity(vx, vy);
 
         py += vy * dt;
         player.set_position(px, py);
 
-        // Check vertical collisions
+        // Vertical collision check
         {
             SDL_Rect playerRect = player.get_collider();
             for (auto& obj : collidable_objects) {
                 if (Collision::AABB(playerRect, obj)) {
                     // Collided vertically
                     if (vy > 0) {
-                        // Moved down into platform, put player on top
                         player.set_position(px, obj.y - playerRect.h);
                     } else if (vy < 0) {
-                        // Moved up into platform (like hitting a ceiling)
                         player.set_position(px, obj.y + obj.h);
                     }
-
                     // Stop vertical movement
                     player.set_velocity(vx, 0.0f);
                     break;
@@ -182,18 +176,35 @@ int main() {
             }
         }
 
+        // Update camera to follow player
+        SDL_Rect playerRect = player.get_collider();
+        camera.update(playerRect, WORLD_WIDTH, WORLD_HEIGHT);
+
         // Render
         SDL_Renderer* renderer = engine.get_renderer();
         SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
         SDL_RenderClear(renderer);
 
-        // Render platforms
+        // Render platforms with camera offset
         for (const auto& object : collidable_objects) {
-            Texture::render(grass_tex, object.x, object.y, renderer);
+            Texture::render(grass_tex, object.x - camera.get_x(), object.y - camera.get_y(), renderer);
         }
 
-        // Render player
-        player.render(renderer);
+        // Render player with camera offset
+        {
+            SDL_Rect pRect = player.get_collider();
+            // We can directly offset render:
+            int render_x = pRect.x - camera.get_x();
+            int render_y = pRect.y - camera.get_y();
+            // Render current frame
+            SDL_Texture* currentTex = playerAnim.get_current_texture();
+            if (currentTex) {
+                int w,h;
+                SDL_QueryTexture(currentTex, NULL, NULL, &w, &h);
+                SDL_Rect dest = {render_x, render_y, w, h};
+                SDL_RenderCopy(renderer, currentTex, NULL, &dest);
+            }
+        }
 
         SDL_RenderPresent(renderer);
     }
@@ -202,7 +213,7 @@ int main() {
     SDL_DestroyTexture(frame1);
     SDL_DestroyTexture(frame2);
     SDL_DestroyTexture(grass_tex);
-
+    Audio::quit();
     engine.quit();
     return 0;
 }

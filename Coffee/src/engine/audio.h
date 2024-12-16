@@ -20,15 +20,14 @@ public:
     static void load_sound(const std::string& name, const std::string& path);
     static void play_sound(const std::string& name, int loops = 0);
 
-    // New methods for setting and handling a sequence of tracks
     static void set_music_sequence(const std::vector<std::string>& sequence);
     static void set_music_sequence(std::initializer_list<std::string> sequence);
-    static void play_next_track();
 
 private:
+    static void play_next_track();
+
     static std::map<std::string, Mix_Chunk*> sound_map;
     static std::map<std::string, Mix_Music*> music_map;
-
     static std::vector<std::string> music_sequence;
     static size_t current_track;
 };

@@ -8,11 +8,9 @@ Entity::Entity(float x, float y, const Animation& animation)
 Entity::~Entity() {}
 
 void Entity::update(float delta_time) {
-    // Apply gravity if enabled
     if (gravity_enabled) {
         vy += gravity_value * delta_time;
     }
-    // Position not changed here. We'll change it in main.
     animation.update(delta_time);
 }
 

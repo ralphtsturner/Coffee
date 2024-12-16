@@ -17,7 +17,8 @@ SRC = $(SRC_DIR)/main.cpp \
       $(ENGINE_DIR)/entity.cpp \
       $(ENGINE_DIR)/collision.cpp \
       $(ENGINE_DIR)/animation.cpp \
-      $(ENGINE_DIR)/audio.cpp
+      $(ENGINE_DIR)/audio.cpp \
+      $(ENGINE_DIR)/camera.cpp
 
 # Object files
 OBJ = $(SRC:%.cpp=$(BUILD_DIR)/%.o)
