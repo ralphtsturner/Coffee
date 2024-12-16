@@ -18,6 +18,14 @@ void Entity::render(SDL_Renderer* renderer) {
     animation.render(renderer, (int)x, (int)y);
 }
 
+void Entity::render_with_offset(SDL_Renderer* renderer, int offset_x, int offset_y) {
+    SDL_Rect collider = get_collider();
+    collider.x += offset_x;
+    collider.y += offset_y;
+    // Use the animation’s render method, which shows the current frame
+    animation.render(renderer, collider.x, collider.y);
+}
+
 void Entity::set_velocity(float vx, float vy) {
     this->vx = vx;
     this->vy = vy;

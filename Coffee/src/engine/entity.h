@@ -12,6 +12,8 @@ public:
     void update(float delta_time);
     void render(SDL_Renderer* renderer);
 
+    void render_with_offset(SDL_Renderer* renderer, int offset_x, int offset_y); // Add this line
+
     void set_velocity(float vx, float vy);
     void get_velocity(float &out_vx, float &out_vy) const;
 

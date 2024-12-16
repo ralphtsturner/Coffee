@@ -94,7 +94,7 @@ int main() {
             engine.quit();
         }
 
-        // Update entity velocities (gravity)
+        // Update entity velocities (gravity, animation frames)
         player.update(dt);
 
         // Get player position and velocity
@@ -190,21 +190,7 @@ int main() {
             Texture::render(grass_tex, object.x - camera.get_x(), object.y - camera.get_y(), renderer);
         }
 
-        // Render player with camera offset
-        {
-            SDL_Rect pRect = player.get_collider();
-            // We can directly offset render:
-            int render_x = pRect.x - camera.get_x();
-            int render_y = pRect.y - camera.get_y();
-            // Render current frame
-            SDL_Texture* currentTex = playerAnim.get_current_texture();
-            if (currentTex) {
-                int w,h;
-                SDL_QueryTexture(currentTex, NULL, NULL, &w, &h);
-                SDL_Rect dest = {render_x, render_y, w, h};
-                SDL_RenderCopy(renderer, currentTex, NULL, &dest);
-            }
-        }
+        player.render_with_offset(renderer, -camera.get_x(), -camera.get_y());
 
         SDL_RenderPresent(renderer);
     }
