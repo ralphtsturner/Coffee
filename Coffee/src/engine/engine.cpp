@@ -10,13 +10,12 @@ Engine::~Engine() {
 }
 
 bool Engine::init(const std::string& title, int width, int height) {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         std::cerr << "SDL could not initialize! " << SDL_GetError() << "\n";
         return false;
     }
 
-    window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
-                              SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
     if (!window) {
         std::cerr << "Failed to create window: " << SDL_GetError() << "\n";
         return false;
@@ -47,7 +46,7 @@ SDL_Renderer* Engine::get_renderer() const {
 
 float Engine::get_delta_time() {
     Uint64 current = SDL_GetPerformanceCounter();
-    float delta = (float)((current - last_time) / (double)SDL_GetPerformanceFrequency());
+    float delta = (current - last_time) / (float)SDL_GetPerformanceFrequency();
     last_time = current;
     return delta;
 }

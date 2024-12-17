@@ -11,6 +11,9 @@ void Entity::update(float delta_time) {
     if (gravity_enabled) {
         vy += gravity_value * delta_time;
     }
+    if (jump_cooldown_timer > 0) {
+        jump_cooldown_timer -= delta_time;
+    }
     animation.update(delta_time);
 }
 
@@ -22,7 +25,6 @@ void Entity::render_with_offset(SDL_Renderer* renderer, int offset_x, int offset
     SDL_Rect collider = get_collider();
     collider.x += offset_x;
     collider.y += offset_y;
-    // Use the animation’s render method, which shows the current frame
     animation.render(renderer, collider.x, collider.y);
 }
 
@@ -48,12 +50,11 @@ void Entity::get_position(float &out_x, float &out_y) const {
 
 SDL_Rect Entity::get_collider() const {
     SDL_Texture* currentTex = animation.get_current_texture();
-    if (!currentTex) {
-        return {(int)x, (int)y, 0, 0};
-    }
+    if (!currentTex) return {(int)x, (int)y, 0, 0};
 
     int w, h;
     SDL_QueryTexture(currentTex, NULL, NULL, &w, &h);
+    std::cout << "Collider: " << x << ", " << y << ", " << w << ", " << h << "\n"; // Debug print
     return { (int)x, (int)y, w, h };
 }
 
@@ -63,4 +64,12 @@ void Entity::set_gravity_enabled(bool enabled) {
 
 void Entity::set_gravity_value(float value) {
     gravity_value = value;
+}
+
+void Entity::reset_jump_cooldown() {
+    jump_cooldown_timer = jump_cooldown;
+}
+
+bool Entity::is_jump_ready() const {
+    return jump_cooldown_timer <= 0.0f;
 }

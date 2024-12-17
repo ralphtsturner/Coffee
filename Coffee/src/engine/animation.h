@@ -14,6 +14,7 @@ public:
     void reset();
     void update(float delta_time);
     void render(SDL_Renderer* renderer, int x, int y) const;
+
     void set_loop(bool loop);
     void set_frame_time(float frame_time);
     bool is_playing() const;

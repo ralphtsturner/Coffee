@@ -1,11 +1,11 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -I/opt/homebrew/include/SDL2 -std=c++17 -Wall -Wextra
+CXXFLAGS = -I/opt/homebrew/include/SDL2 -Isrc/engine -std=c++17 -Wall -Wextra
 LDFLAGS = -L/opt/homebrew/lib -lSDL2 -lSDL2_image -lSDL2_mixer
 
 # Directories
 SRC_DIR = src
-ENGINE_DIR = src/engine
+ENGINE_DIR = $(SRC_DIR)/engine
 BUILD_DIR = build
 BIN_DIR = bin
 
@@ -13,12 +13,14 @@ BIN_DIR = bin
 SRC = $(SRC_DIR)/main.cpp \
       $(ENGINE_DIR)/engine.cpp \
       $(ENGINE_DIR)/input.cpp \
-      $(ENGINE_DIR)/texture.cpp \
-      $(ENGINE_DIR)/entity.cpp \
       $(ENGINE_DIR)/collision.cpp \
-      $(ENGINE_DIR)/animation.cpp \
+      $(ENGINE_DIR)/camera.cpp \
       $(ENGINE_DIR)/audio.cpp \
-      $(ENGINE_DIR)/camera.cpp
+      $(ENGINE_DIR)/texture.cpp \
+      $(ENGINE_DIR)/animation.cpp \
+      $(ENGINE_DIR)/physics.cpp \
+      $(ENGINE_DIR)/entity.cpp \
+      $(ENGINE_DIR)/terrain.cpp
 
 # Object files
 OBJ = $(SRC:%.cpp=$(BUILD_DIR)/%.o)

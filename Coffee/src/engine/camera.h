@@ -11,13 +11,10 @@ public:
 
     int get_x() const;
     int get_y() const;
-    int get_width() const;
-    int get_height() const;
 
 private:
     SDL_Rect camera_rect;
-    int screen_width;
-    int screen_height;
+    int screen_width, screen_height;
 };
 
 #endif

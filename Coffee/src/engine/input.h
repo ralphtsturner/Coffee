@@ -9,7 +9,7 @@ public:
     bool is_key_pressed(SDL_Scancode scancode) const;
 
 private:
-    const Uint8* keyboard_state = SDL_GetKeyboardState(NULL);
+    const Uint8* keyboard_state = SDL_GetKeyboardState(nullptr);
 };
 
 #endif

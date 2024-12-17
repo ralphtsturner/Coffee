@@ -12,6 +12,7 @@ SDL_Texture* Texture::load_texture(const std::string& path, SDL_Renderer* render
 
 void Texture::render(SDL_Texture* texture, int x, int y, SDL_Renderer* renderer) {
     if (!texture) return;
+
     SDL_Rect dest;
     SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
     dest.x = x;
